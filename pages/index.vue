@@ -1,21 +1,5 @@
 <template>
   <div>
-    <div class="flex justify-between items-center px-4 py-3">
-      <div class="border px-5 py-3 rounded-md font-semibold">
-        <p>
-          My Queue
-          <span class="bg-red text-red-400">10</span>
-        </p>
-      </div>
-      <div class="flex items-center gap-2">
-        <div>
-          <p>Steward</p>
-          <p class="text-sm">Logged in as: jane doe</p>
-        </div>
-        <div class="bg-black w-10 h-10 rounded-full"></div>
-      </div>
-    </div>
-
     <div class="flex flex-col items-center justify-center w-full">
       <h1 class="text-3xl py-1 my-2">Select Table</h1>
       <form class="flex">
@@ -48,10 +32,13 @@
             v-for="table in tables"
             :key="table.id"
             class="">
-            <div class="relative flex items-center justify-center">
+            <div
+              class="relative flex items-center justify-center cursor-pointer"
+              :class="{ 'pointer-events-none': table.status !== 'vacant' }"
+              @click="table.status === 'vacant' ? selectTable(table) : selectTable(table, false)">
               <img
                 alt=""
-                src="/assets/tablesvg.svg" />
+                :src="getTableImage(table)" />
 
               <div class="absolute w-full h-full flex items-center justify-center">
                 <span class="text-xl font-bold">{{ table.id }}</span>
@@ -63,7 +50,12 @@
       </div>
       <div class="w-[61rem]">
         <div class="flex justify-end my-4 items-end">
-          <button class="btn btn-primary">Next : Take Order</button>
+          <button
+            class="btn btn-primary bg-[#101828]"
+            :disabled="noTablesSelected"
+            @click="nextPage">
+            Next : Take Order
+          </button>
         </div>
         <!-- <div class="flex justify-between my-4 items-center">
           <button class="btn btn-primary">Previous : View Tables</button>
@@ -75,23 +67,51 @@
 </template>
 
 <script setup lang="ts">
-const tables = ref([
-  { id: 1, status: 'Vacant' },
-  { id: 2, status: 'Occupied' },
-  { id: 3, status: 'Attention' },
-  { id: 4, status: 'Vacant' },
-  { id: 5, status: 'Occupied' },
-  { id: 6, status: 'Attention' },
-  { id: 7, status: 'Vacant' },
-  { id: 8, status: 'Occupied' },
-  { id: 9, status: 'Attention' },
-  { id: 9, status: 'Attention' },
-  { id: 10, status: 'Attention' },
-  { id: 11, status: 'Attention' },
-  { id: 12, status: 'Attention' }
-  // Add more tables as needed
-])
+const tables = ref<any>([])
 
+const noTablesSelected = computed(() => {
+  return !tables.value.some((table: any) => table.isSelected)
+})
+
+const getRandomStatus = () => {
+  const statuses = ['vacant', 'occupied', 'attention']
+  const randomIndex = Math.floor(Math.random() * statuses.length)
+  return statuses[randomIndex]
+}
+
+for (let i = 1; i <= 100; i++) {
+  tables.value.push({ id: i, status: getRandomStatus(), isSelected: false })
+}
+
+const getTableImage = (table: any) => {
+  if (table.status === 'vacant' && table.isSelected) {
+    return '/assets/selected-table.svg' // Change to your selected table image
+  } else if (table.status === 'vacant') {
+    return '/assets/tablesvg.svg'
+  } else if (table.status === 'occupied') {
+    return '/assets/occupied-table.svg'
+  } else if (table.status === 'attention') {
+    return '/assets/unattended-table.svg'
+  }
+}
+
+const tablepick = ref<any>(null)
+
+const selectTable = (table: any, vacant = true) => {
+  if (vacant) {
+    table.isSelected = !table.isSelected
+    tablepick.value = table.id
+  }
+}
+
+const nextPage = () => {
+  navigateTo(`/${tablepick.value}/menu`)
+}
+// const keydownHandler = (e: any) => {
+//   if (e.key === 'Enter') {
+//     console.log('enter')
+//   }
+// }
 </script>
 
 <style scoped>
@@ -99,4 +119,8 @@ const tables = ref([
   max-height: 450px;
   overflow-y: scroll;
 }
+
+/* .selected-table {
+  background-color: lightblue; Change to your desired selected color
+} */
 </style>

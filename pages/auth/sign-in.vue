@@ -27,7 +27,7 @@
               class="input input-bordered w-full max-w-md"
               placeholder="Password"
               required
-              type="text" />
+              type="password" />
           </div>
           <button class="btn rounded-md my-4 text-white bg-[#101828]">Sign In</button>
         </div>
@@ -38,6 +38,9 @@
 
 <script setup lang="ts">
 // import { Auth } from '~/types/auth'
+definePageMeta({
+  layout: false
+})
 
 const { supabase } = useSupabase()
 // const authCookie = useCookie<Auth>('auth_cookie')
