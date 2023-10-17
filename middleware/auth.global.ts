@@ -1,7 +1,7 @@
 export default defineNuxtRouteMiddleware((to, from) => {
     const cookie = useCookie<any>('auth_cookie')
 
-    const isAuthenticated = cookie.value.isLoggedIn || false
+    const isAuthenticated = cookie.value?.isLoggedIn || false
 
     if (to.path === '/auth/sign-out') {
         if (!isAuthenticated) {
