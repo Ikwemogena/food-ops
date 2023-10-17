@@ -1,0 +1,6 @@
+@import './satoshi.css';
+@import './tailwind.css';
+
+body {
+    font-family: 'Satoshi', sans-serif;
+}
